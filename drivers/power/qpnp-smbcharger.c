@@ -1045,6 +1045,20 @@ static int get_prop_batt_voltage_now(struct smbchg_chip *chip)
 	return uv;
 }
 
+#define DEFAULT_BATT_CHARGE_FULL 4000000
+static int get_prop_batt_charge_full(struct smbchg_chip *chip)
+{
+	int uah, rc;
+
+	rc = get_property_from_fg(chip,
+			POWER_SUPPLY_PROP_CHARGE_FULL, &uah);
+	if (rc) {
+		pr_smb(PR_STATUS, "Couldn't get charge_full rc = %d\n", rc);
+		uah = DEFAULT_BATT_CHARGE_FULL;
+	}
+	return uah;
+}
+
 #define DEFAULT_BATT_VOLTAGE_MAX_DESIGN	4200000
 static int get_prop_batt_voltage_max_design(struct smbchg_chip *chip)
 {
@@ -1434,7 +1448,7 @@ static void smbchg_usb_update_online_work(struct work_struct *work)
 						USER_EN_VOTER);
 	int online;
 
-	online = user_enabled && chip->usb_present && !chip->very_weak_charger;
+	online = user_enabled && chip->usb_present;
 
 	mutex_lock(&chip->usb_set_online_lock);
 	if (chip->usb_online != online) {
@@ -3888,7 +3902,7 @@ static int smbchg_register_chg_led(struct smbchg_chip *chip)
 {
 	int rc;
 
-	chip->led_cdev.name = "red";
+	chip->led_cdev.name = "red_charge";
 	chip->led_cdev.brightness_set = smbchg_chg_led_brightness_set;
 	chip->led_cdev.brightness_get = smbchg_chg_led_brightness_get;
 
@@ -5478,6 +5492,8 @@ static enum power_supply_property smbchg_battery_properties[] = {
 	POWER_SUPPLY_PROP_CURRENT_NOW,
 	POWER_SUPPLY_PROP_TEMP,
 	POWER_SUPPLY_PROP_VOLTAGE_NOW,
+	POWER_SUPPLY_PROP_CHARGE_FULL,
+	POWER_SUPPLY_PROP_CHARGE_FULL_DESIGN,
 	POWER_SUPPLY_PROP_SAFETY_TIMER_ENABLE,
 	POWER_SUPPLY_PROP_INPUT_CURRENT_MAX,
 	POWER_SUPPLY_PROP_INPUT_CURRENT_SETTLED,
@@ -5618,7 +5634,7 @@ static int smbchg_battery_get_property(struct power_supply *psy,
 		val->intval = get_prop_batt_health(chip);
 		break;
 	case POWER_SUPPLY_PROP_TECHNOLOGY:
-		val->intval = POWER_SUPPLY_TECHNOLOGY_LION;
+		val->intval = POWER_SUPPLY_TECHNOLOGY_LIPO;
 		break;
 	case POWER_SUPPLY_PROP_FLASH_CURRENT_MAX:
 		val->intval = smbchg_calc_max_flash_current(chip);
@@ -5671,6 +5687,10 @@ static int smbchg_battery_get_property(struct power_supply *psy,
 		break;
 	case POWER_SUPPLY_PROP_RERUN_AICL:
 		val->intval = 0;
+		break;
+	case POWER_SUPPLY_PROP_CHARGE_FULL:
+	case POWER_SUPPLY_PROP_CHARGE_FULL_DESIGN:
+		val->intval = get_prop_batt_charge_full(chip);
 		break;
 	case POWER_SUPPLY_PROP_INPUT_CURRENT_NOW:
 		val->intval = smbchg_get_iusb(chip);
@@ -6713,7 +6733,7 @@ static int smbchg_hw_init(struct smbchg_chip *chip)
 
 	/* battery missing detection */
 	mask =  BATT_MISSING_ALGO_BIT;
-	reg = chip->bmd_algo_disabled ? BATT_MISSING_ALGO_BIT : 0;
+	reg = chip->bmd_algo_disabled ? 0 : BATT_MISSING_ALGO_BIT;
 	if (chip->bmd_pin_src < BPD_TYPE_DEFAULT) {
 		mask |= BMD_PIN_SRC_MASK;
 		reg |= chip->bmd_pin_src << PIN_SRC_SHIFT;
@@ -7857,4 +7877,4 @@ module_exit(smbchg_exit);
 
 MODULE_DESCRIPTION("QPNP SMB Charger");
 MODULE_LICENSE("GPL v2");
-MODULE_ALIAS("platform:qpnp-smbcharger");
+MODULE_ALIAS("platform:qpnp-smbcharger"); 

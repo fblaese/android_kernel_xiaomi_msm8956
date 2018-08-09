@@ -109,9 +109,9 @@ enum msm_usb_phy_type {
 #define IDEV_CHG_MIN	500
 #define IUNIT		100
 
-#define IDEV_ACA_CHG_MAX	1500
+#define IDEV_ACA_CHG_MAX	2000
 #define IDEV_ACA_CHG_LIMIT	500
-#define IDEV_HVDCP_CHG_MAX	1800
+#define IDEV_HVDCP_CHG_MAX	2000
 
 /**
  * Different states involved in USB charger detection.
@@ -318,6 +318,7 @@ struct msm_otg_platform_data {
 	int usb_id_gpio;
 	int hub_reset_gpio;
 	int switch_sel_gpio;
+	int usbid_switch;
 	bool phy_dvdd_always_on;
 	bool emulation;
 	bool enable_streaming;

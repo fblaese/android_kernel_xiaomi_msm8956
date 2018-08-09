@@ -390,7 +390,7 @@ config SND_SOC_MSM8X16_WCD
 
 config SND_SOC_WCD_CPE
 	tristate
-	default y if SND_SOC_WCD9330=y || SND_SOC_WCD9335=y
+	default y if SND_SOC_WCD9330=y || SND_SOC_WCD9335=y || SND_SOC_MSM8X16_WCD=y
 
 config SND_SOC_MSM8909_WCD
 	tristate
@@ -578,3 +578,6 @@ config SND_SOC_MSM_HDMI_CODEC_RX
 	help
 	HDMI audio drivers should be built only if the platform
         supports hdmi panel.
+
+config SOUND_CONTROL
+	bool "Sound control for wcd9335"

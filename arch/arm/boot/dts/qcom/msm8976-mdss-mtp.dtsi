@@ -53,7 +53,7 @@
 
 &pmx_mdss {
 	qcom,num-grp-pins = <3>;
-	qcom,pins = <&gp 25>, <&gp 66>, <&gp 107>;
+	qcom,pins = <&gp 25>, <&gp 66>, <&gp 108>;
 };
 
 &pmx_mdss_te {
@@ -65,18 +65,18 @@
 	pinctrl-names = "mdss_default", "mdss_sleep";
 	pinctrl-0 = <&mdss_dsi_active &mdss_te_active>;
 	pinctrl-1 = <&mdss_dsi_suspend &mdss_te_suspend>;
-	qcom,dsi-pref-prim-pan = <&dsi_dual_nt35597_video>;
+	qcom,dsi-pref-prim-pan = <&dsi_boe_nt35532_1080_vid>;
 
 	qcom,platform-reset-gpio = <&msm_gpio 25 0>;
 	qcom,platform-bklight-en-gpio = <&msm_gpio 66 0>;
-	qcom,panel-mode-gpio = <&msm_gpio 107 0>;
+	qcom,panel-mode-gpio = <&msm_gpio 108 0>;
 };
 
 &mdss_dsi1 {
 	pinctrl-names = "mdss_default", "mdss_sleep";
 	pinctrl-0 = <&mdss_dsi_active &mdss_te_active>;
 	pinctrl-1 = <&mdss_dsi_suspend &mdss_te_suspend>;
-	qcom,dsi-pref-prim-pan = <&dsi_dual_nt35597_video>;
+	qcom,dsi-pref-prim-pan = <&dsi_boe_nt35532_1080_vid>;
 
 	qcom,platform-reset-gpio = <&msm_gpio 25 0>;
 	qcom,platform-bklight-en-gpio = <&msm_gpio 66 0>;
